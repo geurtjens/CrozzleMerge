@@ -7,7 +7,7 @@
 
 import Foundation
 public class FindMatchingShapes {
-    public static func Execute() {
+    public static func Execute() -> [(Int,Int)] {
         print("loading words")
         let wordList = LoadWords.Execute(filename: "8612_Words.txt")
         print("\(wordList.count) words loaded")
@@ -50,10 +50,10 @@ public class FindMatchingShapes {
                             if hasOverlapsReversed == false {
                                 if shapeId < matchingShapeId {
                                     result.append((shapeId,matchingShapeId))
-                                    print(DrawShape.draw(shape: shapeA, wordList: wordList))
-                                    print(DrawShape.draw(shape: shapeB, wordList: wordList))
-                                    print(shapeText)
-                                    print("score: \(score), width:\(width), height: \(height), shapeId:\(shapeId), matchingShapeId:\(matchingShapeId)")
+//                                    print(DrawShape.draw(shape: shapeA, wordList: wordList))
+//                                    print(DrawShape.draw(shape: shapeB, wordList: wordList))
+//                                    print(shapeText)
+//                                    print("score: \(score), width:\(width), height: \(height), shapeId:\(shapeId), matchingShapeId:\(matchingShapeId)")
                                 }
                             }
                         }
@@ -64,6 +64,7 @@ public class FindMatchingShapes {
                 }
             }
         }
+        return result
     }
     
     public static func hasOverlappingWordsHorizontal(width: UInt8, height: UInt8, text: String, wordList:[String]) -> (Bool,[String]) {
