@@ -86,6 +86,19 @@ Seems like we should calculate which shape should stay the same and which shape 
       .      
 ```
 
+```
+.        
+.GLAZE.      
+I H      
+O A   .  
+.NAZARETH.
+. E   R  
+  L   E  
+  N   E  
+  U   .  
+  T      
+  .      
+```
 
 ## Topics
 
