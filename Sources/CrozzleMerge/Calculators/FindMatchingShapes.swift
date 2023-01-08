@@ -38,7 +38,7 @@ public class FindMatchingShapes {
                     let (hasOverlaps, horizontalWords) = hasOverlappingWordsHorizontal(width: width, height: height, text: shapeText, wordList: wordList)
                     
                     if hasOverlaps == false {
-                        print("Still need to check vertically")
+                        //print("Still need to check vertically")
                         
 
                         let rotatedPlacements = DrawShape.rotatePlacements(placements: placements)
@@ -47,12 +47,14 @@ public class FindMatchingShapes {
                         
                         if validRotated == true {
                             let (hasOverlapsReversed, wordListReversed) = hasOverlappingWordsHorizontal(width: width, height: height, text: textRotated, wordList: wordList)
-                            if shapeId < matchingShapeId {
-                                result.append((shapeId,matchingShapeId))
-                                print(DrawShape.draw(shape: shapeA, wordList: wordList))
-                                print(DrawShape.draw(shape: shapeB, wordList: wordList))
-                                print(shapeText)
-                                print("score: \(score), width:\(width), height: \(height), shapeId:\(shapeId), matchingShapeId:\(matchingShapeId)")
+                            if hasOverlapsReversed == false {
+                                if shapeId < matchingShapeId {
+                                    result.append((shapeId,matchingShapeId))
+                                    print(DrawShape.draw(shape: shapeA, wordList: wordList))
+                                    print(DrawShape.draw(shape: shapeB, wordList: wordList))
+                                    print(shapeText)
+                                    print("score: \(score), width:\(width), height: \(height), shapeId:\(shapeId), matchingShapeId:\(matchingShapeId)")
+                                }
                             }
                         }
                         
