@@ -9,13 +9,13 @@ import Foundation
 public class ValidateMerge {
     
     
-    public static func Execute(shapeA: ShapeModel, shapeB: ShapeModel, scoreMin: UInt16, widthMax: UInt8, heightMax: UInt8, wordList: [String]) -> (Bool, String, UInt16, UInt8, UInt8) {
+    public static func Execute(shapeA: ShapeModel, shapeB: ShapeModel, scoreMin: UInt16, widthMax: UInt8, heightMax: UInt8, wordList: [String]) -> (Bool, String, UInt16, UInt8, UInt8, [PlacementModel]) {
         // Returns a list of placements that are in the same order as we found them
         let (placementsA, placementsB) = FindCommonWords(placementsA: shapeA.p, placementsB: shapeB.p)
         
         // if the words that are common are not in same orientation then it will never work
         if CompatibleDirections(placementsA: placementsA, placementsB: placementsB) == false {
-            return (false,"",0,0,0)
+            return (false,"",0,0,0,[])
         }
         
         let sameOrientation = AreCommonWordsInSameDirection(placementsA: placementsA, placementsB: placementsB)
@@ -23,7 +23,7 @@ public class ValidateMerge {
         if sameOrientation == true {
             
             if DistanceSameOrientation(placementsA: placementsA, placementsB: placementsB) == false {
-                return (false,"",0,0,0)
+                return (false,"",0,0,0,[])
             }
             
             
@@ -33,33 +33,21 @@ public class ValidateMerge {
             
             if ((width <= widthMax && height <= heightMax) || (height <= widthMax && width <= heightMax)) == false {
                 // The new height or width is too large
-                return (false,"",0,width,height)
+                return (false,"",0,width,height,[])
             }
             
             
-            
-            // Need to figure out how to do the offset thing to know where we should be placed.
-            // If offsetX is positive then choose offsets of x in the A direction else the B direction
-            // If offsetY is position then choose offsets of y in the A direction else the B direction
-
             let placementsCommonExtractedB = extractCommonPlacements(placements: shapeB.p, placementsToExtract: placementsB)
             
+            let placements = alignPlacements(commonWordA: placementsA[0], commonWordB: placementsB[0], placementsA: shapeA.p, placementsB: placementsCommonExtractedB)
             
-            let (success, shapeText, score) = drawSameOrientation(
-                width: width,
-                height: height,
-                commonWordA: placementsA[0],
-                commonWordB: placementsB[0],
-                placementsA: shapeA.p,
-                placementsB: placementsCommonExtractedB,
-                words: wordList,
-                shapeA: shapeA,
-                shapeB: shapeB)
+            let (success, shapeText, score) = DrawShape.draw(placements: placements, width: width, height: height, wordList: wordList)
+            
             
             if score < scoreMin {
-                return (false, shapeText, score, width, height)
+                return (false, shapeText, score, width, height, placements)
             }
-            return (success, shapeText, score, width, height)
+            return (success, shapeText, score, width, height, placements)
             
         }
 //        else if sameOrientation == false {
@@ -70,7 +58,7 @@ public class ValidateMerge {
 //            }
 //            return false
 //        }
-        return (false,"",0,0,0)
+        return (false,"",0,0,0,[])
     }
     
     
@@ -105,42 +93,42 @@ public class ValidateMerge {
         return result
     }
     
+    public static func alignPlacements( commonWordA: PlacementModel, commonWordB: PlacementModel, placementsA: [PlacementModel], placementsB: [PlacementModel]) -> [PlacementModel] {
+            
+        var finalPlacementA:[PlacementModel] = placementsA
+        var finalPlacementB:[PlacementModel] = placementsB
+        
+        if commonWordB.x < commonWordA.x {
+            let diff: UInt8 = commonWordA.x - commonWordB.x
+            finalPlacementB = placementOffsetX(placements: finalPlacementB, offsetX: diff)
+            
+        } else if commonWordA.x < commonWordB.x {
+            let diff: UInt8 = commonWordB.x - commonWordA.x
+            finalPlacementA = placementOffsetX(placements:finalPlacementA, offsetX: diff)
+        }
+        
+        if commonWordB.y < commonWordA.y {
+            let diff: UInt8 = commonWordA.y - commonWordB.y
+            finalPlacementB = placementOffsetY(placements: finalPlacementB, offsetY: diff)
+            
+        } else if commonWordA.y < commonWordB.y {
+            let diff: UInt8 = commonWordB.y - commonWordA.y
+            finalPlacementA = placementOffsetY(placements:finalPlacementA, offsetY: diff)
+        }
+        
+        let placements = finalPlacementA + finalPlacementB
+        return placements
+    }
+    
+    
     public static func drawSameOrientation(
         width: UInt8,
         height: UInt8,
-        commonWordA: PlacementModel,
-        commonWordB: PlacementModel,
-        placementsA: [PlacementModel],
-        placementsB: [PlacementModel],
+        placements: [PlacementModel],
         words: [String],
         shapeA: ShapeModel,
         shapeB: ShapeModel) -> (Bool, String, UInt16) {
 
-            var finalPlacementA:[PlacementModel] = placementsA
-            var finalPlacementB:[PlacementModel] = placementsB
-            
-            if commonWordB.x < commonWordA.x {
-                let diff: UInt8 = commonWordA.x - commonWordB.x
-                finalPlacementB = placementOffsetX(placements: finalPlacementB, offsetX: diff)
-
-            } else if commonWordA.x < commonWordB.x {
-                let diff: UInt8 = commonWordB.x - commonWordA.x
-                finalPlacementA = placementOffsetX(placements:finalPlacementA, offsetX: diff)
-            }
-            
-            if commonWordB.y < commonWordA.y {
-                let diff: UInt8 = commonWordA.y - commonWordB.y
-                finalPlacementB = placementOffsetY(placements: finalPlacementB, offsetY: diff)
-
-            } else if commonWordA.y < commonWordB.y {
-                let diff: UInt8 = commonWordB.y - commonWordA.y
-                finalPlacementA = placementOffsetY(placements:finalPlacementA, offsetY: diff)
-            }
-            
-            
-        
-        
-        let placements = finalPlacementA + finalPlacementB
                 
        
 

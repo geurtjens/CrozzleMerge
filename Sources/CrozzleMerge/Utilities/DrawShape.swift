@@ -70,6 +70,16 @@ public class DrawShape {
         return String(result)
     }
     
+    public static func rotatePlacements(placements: [PlacementModel]) -> [PlacementModel] {
+        var result: [PlacementModel] = []
+        for placement in placements {
+            let rotated = PlacementModel(id: placement.id, x: placement.y, y: placement.x, isHorizontal: !placement.isHorizontal)
+            result.append(rotated)
+        }
+        return result
+    }
+    
+    
     
     public static func draw(placements: [PlacementModel], width: UInt8, height: UInt8, wordList:[String]) -> (Bool,String,UInt16) {
         

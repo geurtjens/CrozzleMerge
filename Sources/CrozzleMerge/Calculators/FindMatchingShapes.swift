@@ -30,21 +30,31 @@ public class FindMatchingShapes {
             for matchingShapeId in matchingShapes {
                 let shapeB = shapes[matchingShapeId]
                 
-                let (mergeable,shapeText,score,width,height) = ValidateMerge.Execute(shapeA: shapeA, shapeB: shapeB, scoreMin: 0, widthMax: 17, heightMax: 12, wordList: wordList)
+                let (mergeable,shapeText,score,width,height, placements) = ValidateMerge.Execute(shapeA: shapeA, shapeB: shapeB, scoreMin: 0, widthMax: 17, heightMax: 12, wordList: wordList)
                 // Our first level is working so now we have to do the last check to see if all the words that are there are not falling along side each other
                 if mergeable == true {
                     //print(shapeText)
                     // Now we must check for overlapping words
-                    let (hasOverlaps, wordList) = hasOverlappingWordsHorizontal(width: width, height: height, text: shapeText, wordList: wordList)
+                    let (hasOverlaps, horizontalWords) = hasOverlappingWordsHorizontal(width: width, height: height, text: shapeText, wordList: wordList)
                     
                     if hasOverlaps == false {
                         print("Still need to check vertically")
-                        result.append((shapeId,matchingShapeId))
-                        print(DrawShape.draw(shape: shapeA, wordList: wordList))
-                        print(DrawShape.draw(shape: shapeB, wordList: wordList))
-                        print(shapeText)
-                        print(score, width, height)
+                        
 
+                        let rotatedPlacements = DrawShape.rotatePlacements(placements: placements)
+                        
+                        let (validRotated, textRotated,_) = DrawShape.draw(placements: rotatedPlacements, width: height, height: width, wordList: wordList)
+                        
+                        if validRotated == true {
+                            let (hasOverlapsReversed, wordListReversed) = hasOverlappingWordsHorizontal(width: width, height: height, text: textRotated, wordList: wordList)
+                            if shapeId < matchingShapeId {
+                                result.append((shapeId,matchingShapeId))
+                                print(DrawShape.draw(shape: shapeA, wordList: wordList))
+                                print(DrawShape.draw(shape: shapeB, wordList: wordList))
+                                print(shapeText)
+                                print("score: \(score), width:\(width), height: \(height), shapeId:\(shapeId), matchingShapeId:\(matchingShapeId)")
+                            }
+                        }
                         
                     }
                     
