@@ -133,7 +133,7 @@ final class Test_ValidateMerge: XCTestCase {
         print(expectedA)
         print(expectedMergeText)
         
-        let (success, shapeText, score, width, height, placements) = ValidateMerge.Execute(shapeA:shapeA, shapeB_: shapeB, rotatedShapeB: rotatedShapeB, scoreMin: 0, widthMax: 17, heightMax: 12, wordList: wordList)
+        let (success, shapeText, score, width, height, placements) = ValidateMerge.Execute(shapeA:shapeA, shapeB: shapeB, rotatedShapeB: rotatedShapeB, scoreMin: 0, widthMax: 17, heightMax: 12, wordList: wordList)
         
         XCTAssertTrue(success)
         XCTAssertEqual(score, 202)

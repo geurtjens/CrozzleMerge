@@ -9,7 +9,7 @@ import XCTest
 @testable import CrozzleMerge
 final class Test_CrazyStuff: XCTestCase {
 
-    func test2() throws {
+    func test_CompatibleDirections() throws {
        
         
         let wordList = WordRepository.W8809()
@@ -18,40 +18,47 @@ final class Test_CrazyStuff: XCTestCase {
         //["ZION", "HAZELNUT"]
         let placementsA = [PlacementModel(id: 25, x: 0, y: 1, isHorizontal: true),PlacementModel(id: 6, x: 3, y: 4, isHorizontal: true),PlacementModel(id: 0, x: 4, y: 0, isHorizontal: false),PlacementModel(id: 4, x: 6, y: 1, isHorizontal: false)]
 
-        let shapeA = ShapeModel(s: 0, w: 13, h: 11, p: placementsA)
-
         //["BELLS", "NAZARETH"]
         //["GLAZE", "CREAM"]
         let placementsB = [PlacementModel(id: 23, x: 0, y: 2, isHorizontal: true),PlacementModel(id: 6, x: 1, y: 4, isHorizontal: true),PlacementModel(id: 25, x: 4, y: 0, isHorizontal: false),PlacementModel(id: 83, x: 6, y: 2, isHorizontal: false)]
 
-        let shapeB = ShapeModel(s: 0, w: 11, h: 9, p: placementsB)
+        let directionsAreCompatible = ValidateMerge.CompatibleDirections(placementsA: placementsA, placementsB: placementsB)
 
-        print(DrawShape.draw(shape: shapeA, wordList: wordList))
-        print("")
-        print(DrawShape.draw(shape: shapeB, wordList:wordList))
-        
-        
-
-        let rotatedB = RotateShape.rotateShape(shape: shapeB)
-        
-        let (success, shapeText, score, width, height, placements) = ValidateMerge.Execute(shapeA: shapeA, shapeB_: shapeB, rotatedShapeB: rotatedB, scoreMin:0, widthMax: 17, heightMax: 12, wordList: wordList)
-        
-        XCTAssertTrue(success)
-        print(shapeText)
-        
-        // We are trying to reproduce this error here:
-        /*           .
-               .GLAZE.
-                   I H
-           .BELLS. O A
-                 C.NAZARETH.
-                 R . E
-                 E   L
-                 A   N
-                 M   U
-                 .   T
-                     .
-           */
+        XCTAssertFalse(directionsAreCompatible)
+//
+//        let shapeB = ShapeModel(s: 0, w: 11, h: 9, p: placementsB)
+//
+//        print(DrawShape.draw(shape: shapeA, wordList: wordList))
+//        print("")
+//        print(DrawShape.draw(shape: shapeB, wordList:wordList))
+//
+//
+//
+//        let rotatedB = RotateShape.rotateShape(shape: shapeB)
+//        print(DrawShape.draw(shape: rotatedB, wordList: wordList))
+//
+//
+//        let (placementsA1, placementsB1, sameOrientation) = ValidateMerge.FindCommonWords(placementsA: shapeA.p, placementsB: shapeB.p)
+//
+//
+//        let (success, shapeText, score, width, height, placements) = ValidateMerge.Execute(shapeA: shapeA, shapeB: shapeB, rotatedShapeB: rotatedB, scoreMin:0, widthMax: 17, heightMax: 12, wordList: wordList)
+//
+//        XCTAssertTrue(success)
+//        print(shapeText)
+//
+//        // We are trying to reproduce this error here:
+//        /*           .
+//               .GLAZE.
+//                   I H
+//           .BELLS. O A
+//                 C.NAZARETH.
+//                 R . E
+//                 E   L
+//                 A   N
+//                 M   U
+//                 .   T
+//                     .
+//           */
     }
 
     func testExample() throws {
@@ -94,13 +101,6 @@ final class Test_CrazyStuff: XCTestCase {
         print(codeB)
         
    
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
     }
 
 }

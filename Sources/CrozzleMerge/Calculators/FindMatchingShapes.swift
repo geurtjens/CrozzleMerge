@@ -34,7 +34,7 @@ public class FindMatchingShapes {
             for matchingShapeId in matchingShapes {
                 let shapeB = shapes[matchingShapeId]
                 let rotatedShapeB = rotatedShapes[matchingShapeId]
-                let (mergeable,shapeText,score,width,height, placements) = ValidateMerge.Execute(shapeA: shapeA, shapeB_: shapeB, rotatedShapeB: rotatedShapeB, scoreMin: 0, widthMax: 17, heightMax: 12, wordList: wordList)
+                let (mergeable,shapeText,score,width,height, placements) = ValidateMerge.Execute(shapeA: shapeA, shapeB: shapeB, rotatedShapeB: rotatedShapeB, scoreMin: 0, widthMax: 17, heightMax: 12, wordList: wordList)
                 // Our first level is working so now we have to do the last check to see if all the words that are there are not falling along side each other
                 if mergeable == true {
                     //print(shapeText)
