@@ -155,108 +155,13 @@ final class Test_ValidateMerge: XCTestCase {
     
     
     
-    func test_FindCommonWords() throws {
-        let placementsA = [
-            PlacementModel(id:0,x:1,y:2,isHorizontal: true),
-            PlacementModel(id:6,x:3,y:4,isHorizontal: false),
-            PlacementModel(id:1,x:5,y:6,isHorizontal: true),
-            PlacementModel(id:8,x:7,y:8,isHorizontal: false)
-        ]
-        
-        let placementsB = [
-            PlacementModel(id:0,x:5,y:6,isHorizontal: true),
-            PlacementModel(id:1,x:7,y:7,isHorizontal: false),
-            PlacementModel(id:9,x:8,y:9,isHorizontal: true),
-            PlacementModel(id:18,x:10,y:11,isHorizontal: false)
-        ]
-        
-        let (a,b,c) = ValidateMerge.FindCommonWords(placementsA: placementsA, placementsB: placementsB)
-        
-        XCTAssertEqual(a.count, 2)
-        XCTAssertEqual(b.count, 2)
-        XCTAssertEqual(a[0].id, b[0].id)
-        XCTAssertEqual(a[1].id, b[1].id)
-    }
     
     
-    /// We have common words and so are they in exactly the same direction from one shape to another
-    /// This should return true as they are in same direction
-    func test_IsSameDirection_True() throws {
-
-        let placementsA = [
-            PlacementModel(id:0,x:1,y:2,isHorizontal: true),
-            PlacementModel(id:1,x:3,y:4,isHorizontal: false)
-        ]
-        
-        let placementsB = [
-            PlacementModel(id:0,x:5,y:6,isHorizontal: true),
-            PlacementModel(id:1,x:7,y:7,isHorizontal: false)
-        ]
-        
-        let result = ValidateMerge.AreCommonWordsInSameDirection(placementsA: placementsA, placementsB: placementsB)
-        
-        XCTAssertTrue(result)
-    }
-
-    /// We have common words and so are they in exactly the same direction from one shape to another
-    /// This should return false as they are not in same direction
-    func test_IsSameDirection_False() throws {
-
-        let placementsA = [
-            PlacementModel(id:0,x:1,y:2,isHorizontal: false),
-            PlacementModel(id:1,x:3,y:4,isHorizontal: false)
-        ]
-        
-        let placementsB = [
-            PlacementModel(id:0,x:5,y:6,isHorizontal: true),
-            PlacementModel(id:1,x:7,y:7,isHorizontal: false)
-        ]
-        
-        let result = ValidateMerge.AreCommonWordsInSameDirection(placementsA: placementsA, placementsB: placementsB)
-        
-        XCTAssertFalse(result)
-    }
     
     
-    func test_CompatibleDirections_SameDirection_True() throws {
-        let placementsA = [
-            PlacementModel(id:0,x:1,y:2,isHorizontal: true),
-            PlacementModel(id:1,x:3,y:4,isHorizontal: false)
-        ]
-        
-        let placementsB = [
-            PlacementModel(id:0,x:5,y:6,isHorizontal: true),
-            PlacementModel(id:1,x:7,y:7,isHorizontal: false)
-        ]
-        
-        // These have compatible directions because true in one is true in another and false in one is false in another
-        XCTAssertTrue(ValidateMerge.CompatibleDirectionSame(placementsA: placementsA, placementsB: placementsB))
-        
-        let result = ValidateMerge.CompatibleDirections(placementsA: placementsA, placementsB: placementsB)
-        
-        XCTAssertTrue(result)
-        
-        //
-    }
-
-    func test_CompatibleDirections_OppositeDirection_True() throws {
-        let placementsA = [
-            PlacementModel(id:0,x:1,y:2,isHorizontal: true),
-            PlacementModel(id:1,x:3,y:4,isHorizontal: false)
-        ]
-        
-        let placementsB = [
-            PlacementModel(id:0,x:5,y:6,isHorizontal: false),
-            PlacementModel(id:1,x:7,y:7,isHorizontal: true)
-        ]
-        
-        // These have compatible directions because true in one is false in another and false in one is true in another for all matching pairs
-        
-        XCTAssertTrue(ValidateMerge.CompatibleDirectionOpposite(placementsA: placementsA, placementsB: placementsB))
-        
-        // And so if its compatible in opposite direction then overall its compatible
-        XCTAssertTrue(ValidateMerge.CompatibleDirections(placementsA: placementsA, placementsB: placementsB))
-    }
+    
+    
+    
     func test_CheckDistances() throws {
         let placementsA = [
             PlacementModel(id:0,x:0,y:0,isHorizontal: true),

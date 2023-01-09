@@ -54,8 +54,8 @@ public class FindMatchingShapes {
                             if hasOverlapsReversed == false {
                                 if shapeId < matchingShapeId {
                                     result.append((shapeId, matchingShapeId, UInt16(score)))
-                                    print(DrawShape.draw(shape: shapeA, wordList: wordList))
-                                    print(DrawShape.draw(shape: shapeB, wordList: wordList))
+                                    //print(DrawShape.draw(shape: shapeA, wordList: wordList))
+                                    //print(DrawShape.draw(shape: shapeB, wordList: wordList))
                                     print(shapeText)
                                     print("score: \(score), width:\(width), height: \(height), shapeId:\(shapeId), matchingShapeId:\(matchingShapeId)")
                                     print("\(shapeId),\(matchingShapeId),\(score)")
