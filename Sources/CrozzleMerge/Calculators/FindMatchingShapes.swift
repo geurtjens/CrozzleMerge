@@ -26,7 +26,19 @@ public class FindMatchingShapes {
         
         print("finding mergable shapes")
         var result:[(Int,Int, UInt16)] = []
+        
+        let shapeIncrementAsPercentage = shapes.count / 100
+        
         for shapeId in 0..<shapes.count {
+            
+
+            if shapeId % shapeIncrementAsPercentage == 0 && shapeId != 0 {
+                print("percent complete: \(shapeIncrementAsPercentage / shapeId) with \(result.count) items so far")
+            }
+            
+            
+            
+            
             let shapeA = shapes[shapeId]
             
             let matchingShapes = FindShapesWithMatchingWords(shape: shapeA, index: index)
@@ -53,12 +65,16 @@ public class FindMatchingShapes {
                             let (hasOverlapsReversed, wordListReversed) = hasOverlappingWordsHorizontal(width: width, height: height, text: textRotated, wordList: wordList)
                             if hasOverlapsReversed == false {
                                 if shapeId < matchingShapeId {
+                                    
+                                    
+                                    
+                                    
                                     result.append((shapeId, matchingShapeId, UInt16(score)))
                                     //print(DrawShape.draw(shape: shapeA, wordList: wordList))
                                     //print(DrawShape.draw(shape: shapeB, wordList: wordList))
-                                    print(shapeText)
-                                    print("score: \(score), width:\(width), height: \(height), shapeId:\(shapeId), matchingShapeId:\(matchingShapeId)")
-                                    print("\(shapeId),\(matchingShapeId),\(score)")
+                                    //print(shapeText)
+                                    //print("score: \(score), width:\(width), height: \(height), shapeId:\(shapeId), matchingShapeId:\(matchingShapeId)")
+                                    //print("\(shapeId),\(matchingShapeId),\(score)")
                                 }
                             }
                         }
