@@ -98,7 +98,10 @@ final class Test_ValidateMerge: XCTestCase {
         ]
         let shapeB = ShapeModel(s: 56, w: 6, h: 10, p: placementsB)
         
+        let rotatedShapeB = RotateShape.rotateShape(shape: shapeB)
+        
         let textB = DrawShape.draw(shape: shapeB, wordList: wordList)
+        let textC = DrawShape.draw(shape: rotatedShapeB, wordList:wordList)
         
         let expectedB = "" +
              " .    \n" +
@@ -112,6 +115,7 @@ final class Test_ValidateMerge: XCTestCase {
              ".TOYS.\n" +
              " .    "
         print(textB)
+        print(textC)
         XCTAssertEqual(textB,expectedB)
         
         let expectedMergeText = "" +
@@ -129,7 +133,7 @@ final class Test_ValidateMerge: XCTestCase {
         print(expectedA)
         print(expectedMergeText)
         
-        let (success, shapeText, score, width, height, placements) = ValidateMerge.Execute(shapeA:shapeA, shapeB: shapeB, scoreMin: 0, widthMax: 17, heightMax: 12, wordList: wordList)
+        let (success, shapeText, score, width, height, placements) = ValidateMerge.Execute(shapeA:shapeA, shapeB_: shapeB, rotatedShapeB: rotatedShapeB, scoreMin: 0, widthMax: 17, heightMax: 12, wordList: wordList)
         
         XCTAssertTrue(success)
         XCTAssertEqual(score, 202)
@@ -166,7 +170,7 @@ final class Test_ValidateMerge: XCTestCase {
             PlacementModel(id:18,x:10,y:11,isHorizontal: false)
         ]
         
-        let (a,b) = ValidateMerge.FindCommonWords(placementsA: placementsA, placementsB: placementsB)
+        let (a,b,c) = ValidateMerge.FindCommonWords(placementsA: placementsA, placementsB: placementsB)
         
         XCTAssertEqual(a.count, 2)
         XCTAssertEqual(b.count, 2)

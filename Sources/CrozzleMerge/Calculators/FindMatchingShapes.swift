@@ -7,7 +7,7 @@
 
 import Foundation
 public class FindMatchingShapes {
-    public static func Execute() -> [(Int,Int)] {
+    public static func Execute() -> [(Int,Int,UInt16)] {
         print("loading words")
         let wordList = LoadWords.Execute(filename: "8612_Words.txt")
         print("\(wordList.count) words loaded")
@@ -20,8 +20,12 @@ public class FindMatchingShapes {
         let index = LoadWordToShapeIndex.Execute(filename: "8612_ShapeIndex.csv")
         print("\(index.count) index items loaded")
 
+        print("rotating shapes")
+        let rotatedShapes = RotateShape.rotateShapes(shapes: shapes)
+        print("\(rotatedShapes.count) shapes rotated")
+        
         print("finding mergable shapes")
-        var result:[(Int,Int)] = []
+        var result:[(Int,Int, UInt16)] = []
         for shapeId in 0..<shapes.count {
             let shapeA = shapes[shapeId]
             
@@ -29,8 +33,8 @@ public class FindMatchingShapes {
             
             for matchingShapeId in matchingShapes {
                 let shapeB = shapes[matchingShapeId]
-                
-                let (mergeable,shapeText,score,width,height, placements) = ValidateMerge.Execute(shapeA: shapeA, shapeB: shapeB, scoreMin: 0, widthMax: 17, heightMax: 12, wordList: wordList)
+                let rotatedShapeB = rotatedShapes[matchingShapeId]
+                let (mergeable,shapeText,score,width,height, placements) = ValidateMerge.Execute(shapeA: shapeA, shapeB_: shapeB, rotatedShapeB: rotatedShapeB, scoreMin: 0, widthMax: 17, heightMax: 12, wordList: wordList)
                 // Our first level is working so now we have to do the last check to see if all the words that are there are not falling along side each other
                 if mergeable == true {
                     //print(shapeText)
@@ -41,7 +45,7 @@ public class FindMatchingShapes {
                         //print("Still need to check vertically")
                         
 
-                        let rotatedPlacements = DrawShape.rotatePlacements(placements: placements)
+                        let rotatedPlacements = RotateShape.rotatePlacements(placements: placements)
                         
                         let (validRotated, textRotated,_) = DrawShape.draw(placements: rotatedPlacements, width: height, height: width, wordList: wordList)
                         
@@ -49,18 +53,16 @@ public class FindMatchingShapes {
                             let (hasOverlapsReversed, wordListReversed) = hasOverlappingWordsHorizontal(width: width, height: height, text: textRotated, wordList: wordList)
                             if hasOverlapsReversed == false {
                                 if shapeId < matchingShapeId {
-                                    result.append((shapeId,matchingShapeId))
-//                                    print(DrawShape.draw(shape: shapeA, wordList: wordList))
-//                                    print(DrawShape.draw(shape: shapeB, wordList: wordList))
-//                                    print(shapeText)
-//                                    print("score: \(score), width:\(width), height: \(height), shapeId:\(shapeId), matchingShapeId:\(matchingShapeId)")
+                                    result.append((shapeId, matchingShapeId, UInt16(score)))
+                                    print(DrawShape.draw(shape: shapeA, wordList: wordList))
+                                    print(DrawShape.draw(shape: shapeB, wordList: wordList))
+                                    print(shapeText)
+                                    print("score: \(score), width:\(width), height: \(height), shapeId:\(shapeId), matchingShapeId:\(matchingShapeId)")
+                                    print("\(shapeId),\(matchingShapeId),\(score)")
                                 }
                             }
                         }
-                        
                     }
-                    
-                    
                 }
             }
         }

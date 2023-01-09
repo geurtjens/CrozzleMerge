@@ -70,14 +70,7 @@ public class DrawShape {
         return String(result)
     }
     
-    public static func rotatePlacements(placements: [PlacementModel]) -> [PlacementModel] {
-        var result: [PlacementModel] = []
-        for placement in placements {
-            let rotated = PlacementModel(id: placement.id, x: placement.y, y: placement.x, isHorizontal: !placement.isHorizontal)
-            result.append(rotated)
-        }
-        return result
-    }
+    
     
     
     

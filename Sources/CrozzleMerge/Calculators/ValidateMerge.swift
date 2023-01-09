@@ -9,47 +9,50 @@ import Foundation
 public class ValidateMerge {
     
     
-    public static func Execute(shapeA: ShapeModel, shapeB: ShapeModel, scoreMin: UInt16, widthMax: UInt8, heightMax: UInt8, wordList: [String]) -> (Bool, String, UInt16, UInt8, UInt8, [PlacementModel]) {
+    public static func Execute(shapeA: ShapeModel, shapeB_: ShapeModel, rotatedShapeB: ShapeModel, scoreMin: UInt16, widthMax: UInt8, heightMax: UInt8, wordList: [String]) -> (Bool, String, UInt16, UInt8, UInt8, [PlacementModel]) {
         // Returns a list of placements that are in the same order as we found them
-        let (placementsA, placementsB) = FindCommonWords(placementsA: shapeA.p, placementsB: shapeB.p)
-        
-        // if the words that are common are not in same orientation then it will never work
-        if CompatibleDirections(placementsA: placementsA, placementsB: placementsB) == false {
+        let (placementsA, placementsBSameOrientation, sameOrientation) = FindCommonWords(placementsA: shapeA.p, placementsB: shapeB_.p)
+        // The opposite orientation ones are not working
+        if (placementsA.count == 0) {
+            // we could not find compatible common words
             return (false,"",0,0,0,[])
         }
         
-        let sameOrientation = AreCommonWordsInSameDirection(placementsA: placementsA, placementsB: placementsB)
-        
-        if sameOrientation == true {
-            
-            if DistanceSameOrientation(placementsA: placementsA, placementsB: placementsB) == false {
-                return (false,"",0,0,0,[])
-            }
-            
-            
-
-            let width = widthSameOrientation(widthA: shapeA.w, widthB: shapeB.w, xA: placementsA[0].x, xB: placementsB[0].x)
-            let height = heightSameOrientation(heightA: shapeA.h, heightB: shapeB.h, yA: placementsA[0].y, yB: placementsB[0].y)
-            
-            if ((width <= widthMax && height <= heightMax) || (height <= widthMax && width <= heightMax)) == false {
-                // The new height or width is too large
-                return (false,"",0,width,height,[])
-            }
-            
-            
-            let placementsCommonExtractedB = extractCommonPlacements(placements: shapeB.p, placementsToExtract: placementsB)
-            
-            let placements = alignPlacements(commonWordA: placementsA[0], commonWordB: placementsB[0], placementsA: shapeA.p, placementsB: placementsCommonExtractedB)
-            
-            let (success, shapeText, score) = DrawShape.draw(placements: placements, width: width, height: height, wordList: wordList)
-            
-            
-            if score < scoreMin {
-                return (false, shapeText, score, width, height, placements)
-            }
-            return (success, shapeText, score, width, height, placements)
-            
+        var placementsB = placementsBSameOrientation
+        var shapeB = shapeB_
+        if sameOrientation == false {
+            placementsB = RotateShape.rotatePlacements(placements: placementsBSameOrientation)
+            shapeB = rotatedShapeB
         }
+        
+        
+            
+        if DistanceSameOrientation(placementsA: placementsA, placementsB: placementsB) == false {
+            return (false,"",0,0,0,[])
+        }
+
+        let width = widthSameOrientation(widthA: shapeA.w, widthB: shapeB.w, xA: placementsA[0].x, xB: placementsB[0].x)
+        let height = heightSameOrientation(heightA: shapeA.h, heightB: shapeB.h, yA: placementsA[0].y, yB: placementsB[0].y)
+        
+        if ((width <= widthMax && height <= heightMax) || (height <= widthMax && width <= heightMax)) == false {
+            // The new height or width is too large
+            return (false,"",0,width,height,[])
+        }
+        
+        let placementsCommonExtractedB = extractCommonPlacements(placements: shapeB.p, placementsToExtract: placementsB)
+        
+        let placements = alignPlacements(commonWordA: placementsA[0], commonWordB: placementsB[0], placementsA: shapeA.p, placementsB: placementsCommonExtractedB)
+        
+        let (success, shapeText, score) = DrawShape.draw(placements: placements, width: width, height: height, wordList: wordList)
+        
+        
+        if score < scoreMin {
+            return (false, shapeText, score, width, height, placements)
+        }
+        return (success, shapeText, score, width, height, placements)
+            
+        
+        
 //        else if sameOrientation == false {
 //            return (false, "",0,0,0)
 //            // We have yet to prove that this reversing thing works, lets test it later
@@ -58,7 +61,7 @@ public class ValidateMerge {
 //            }
 //            return false
 //        }
-        return (false,"",0,0,0,[])
+        //return (false,"",0,0,0,[])
     }
     
     
@@ -222,7 +225,7 @@ public class ValidateMerge {
     }
     
     public static func FindCommonWords(placementsA: [PlacementModel], placementsB: [
-        PlacementModel]) -> ([PlacementModel],[PlacementModel]) {
+        PlacementModel]) -> ([PlacementModel],[PlacementModel],Bool) {
         var commonPlacementsA: [PlacementModel] = []
         var commonPlacementsB: [PlacementModel] = []
         
@@ -234,7 +237,25 @@ public class ValidateMerge {
                 }
             }
         }
-        return (commonPlacementsA, commonPlacementsB)
+            
+            let empty: [PlacementModel] = []
+            
+        if commonPlacementsA.count == placementsA.count || commonPlacementsB.count == placementsB.count {
+            // one word is not a subset of another word
+            return (empty,empty, false)
+        }
+        
+        // if the words that are common are not in same orientation then it will never work
+        if CompatibleDirections(placementsA: commonPlacementsA, placementsB: commonPlacementsB) == false {
+            return ([],[], false)
+        }
+        
+        let sameOrientation = AreCommonWordsInSameDirection(placementsA: placementsA, placementsB: placementsB)
+        
+            
+            
+            
+        return (commonPlacementsA, commonPlacementsB, sameOrientation)
     }
     
     
