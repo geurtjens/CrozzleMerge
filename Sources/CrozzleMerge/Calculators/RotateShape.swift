@@ -6,7 +6,7 @@
 //
 
 import Foundation
-class RotateShape {
+public class RotateShape {
 
     
     public static func rotateShapes(shapes:[ShapeModel]) -> [ShapeModel] {
