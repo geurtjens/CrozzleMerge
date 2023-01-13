@@ -12,7 +12,7 @@ final class Test_FindMatchingShapes: XCTestCase {
  
 
     func testExample() throws {
-        let result = FindMatchingShapes.ExecuteAll()
+        let result = FindMatchingShapes.ExecuteAll(minScorePerWord: 26)
         print(result.count)
         print("Completed Successfully")
     }

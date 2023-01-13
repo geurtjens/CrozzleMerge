@@ -7,7 +7,7 @@
 
 import Foundation
 public class FindMatchingShapes {
-    public static func ExecuteAll() -> [MergedModel] {
+    public static func ExecuteAll(minScorePerWord: Int) -> [MergedModel] {
         print("loading words")
         let wordList = LoadWords.Execute(filename: "8612_Words.txt")
         print("\(wordList.count) words loaded")
@@ -49,7 +49,7 @@ public class FindMatchingShapes {
             let foundShapes = Execute(shapeId: shapeId, shapes: shapes, rotatedShapes:rotatedShapes, index: index, wordList: wordList)
             
             
-            let filteredFoundShapes = foundShapes.filter { Int($0.score) / Int($0.wordCount) >= 32 }
+            let filteredFoundShapes = foundShapes.filter { Int($0.score) / Int($0.wordCount) >= minScorePerWord }
             
             let mergedModel = MergedModel(shapeId: shapeId, compatibleShapes: filteredFoundShapes)
             // ideally here we just print it to a file, one shape at a time
