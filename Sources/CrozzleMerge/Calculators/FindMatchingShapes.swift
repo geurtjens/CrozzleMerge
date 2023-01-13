@@ -17,11 +17,23 @@ public class FindMatchingShapes {
         
         // We should filter these shape sizes
         
-        print("\(shapes.count) shapes loaded")
+        
+
+        let (dictionary, shapeAnalysis, analysisJson) = ShapeAnalysisCalculator.execute(shapes: shapes, gameId: 8612)
+        print(analysisJson)
+
+        // We are only interested in shapes that meet our score per word minimum
+        //let shapes = shapesAll.filter { Int($0.s) / Int($0.p.count) >= scorePerWordMin}
+        print("\(shapes.count) shapes accepted")
+        
+       
+        
         
         print("loading shape index")
         let index = LoadWordToShapeIndex.Execute(filename: "8612_ShapeIndex.csv")
         print("\(index.count) index items loaded")
+        
+        
         
         print("rotating shapes")
         let rotatedShapes = RotateShape.rotateShapes(shapes: shapes)
@@ -31,15 +43,24 @@ public class FindMatchingShapes {
         var result:[MergedModel] = []
         
         //let shapeIncrementAsPercentage = shapes.count / 100
-        
+        var totalShapesFound = 0
         for shapeId in 0..<shapes.count {
             
             let foundShapes = Execute(shapeId: shapeId, shapes: shapes, rotatedShapes:rotatedShapes, index: index, wordList: wordList)
             
-            let mergedModel = MergedModel(shapeId: shapeId, compatibleShapes: foundShapes)
+            
+            let filteredFoundShapes = foundShapes.filter { Int($0.score) / Int($0.wordCount) >= 32 }
+            
+            let mergedModel = MergedModel(shapeId: shapeId, compatibleShapes: filteredFoundShapes)
             // ideally here we just print it to a file, one shape at a time
-            print(mergedModel)
+            //print(mergedModel)
             result.append(mergedModel)
+            
+            totalShapesFound += filteredFoundShapes.count
+            
+            if shapeId % 100 == 0 {
+                print("\(shapeId) of \(shapes.count) shapes merged, percent complete:\(Double(shapeId) / Double(shapes.count) * Double(100)), total merges so far: \(totalShapesFound)")
+            }
         }
         return result
     }
@@ -55,7 +76,7 @@ public class FindMatchingShapes {
         return result
     }
     
-    static func Execute(shapeId: Int, shapes: [ShapeModel], rotatedShapes: [ShapeModel], index: [[Int]], wordList: [String]) -> [MergedItemModel] {
+    public static func Execute(shapeId: Int, shapes: [ShapeModel], rotatedShapes: [ShapeModel], index: [[Int]], wordList: [String]) -> [MergedItemModel] {
         
         var result:[MergedItemModel] = []
         
