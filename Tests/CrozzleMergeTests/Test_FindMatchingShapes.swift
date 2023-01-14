@@ -11,8 +11,8 @@ final class Test_FindMatchingShapes: XCTestCase {
 
  
 
-    func testExample() throws {
-        let result = FindMatchingShapes.ExecuteAll(minScorePerWord: 26)
+    func testExample() async throws {
+        let result = await FindMatchingShapes.ExecuteAll(minScorePerWord: 26)
         print(result.count)
         print("Completed Successfully")
     }

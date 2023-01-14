@@ -7,7 +7,8 @@
 
 import Foundation
 public class FindMatchingShapes {
-    public static func ExecuteAll(minScorePerWord: Int) -> [MergedModel] {
+    
+    public static func ExecuteAll(minScorePerWord: Int) async -> [MergedModel] {
         print("loading words")
         let wordList = LoadWords.Execute(filename: "8612_Words.txt")
         print("\(wordList.count) words loaded")
@@ -39,8 +40,11 @@ public class FindMatchingShapes {
         let rotatedShapes = RotateShape.rotateShapes(shapes: shapes)
         print("\(rotatedShapes.count) shapes rotated")
         
-        print("finding mergable shapes")
+        print("finding merge-able shapes")
         var result:[MergedModel] = []
+        
+        return await ExecuteAllAsync(minScorePerWord: minScorePerWord, wordList: wordList, shapes: shapes, rotatedShapes: rotatedShapes, index: index)
+        
         
         //let shapeIncrementAsPercentage = shapes.count / 100
         var totalShapesFound = 0
@@ -58,11 +62,74 @@ public class FindMatchingShapes {
             
             totalShapesFound += filteredFoundShapes.count
             
+            if shapeId % 1000 == 0 {
+                print("\(shapeId) of \(shapes.count) shapes merged, percent complete:\(Double(shapeId) / Double(shapes.count) * Double(100)), total merges so far: \(totalShapesFound)")
+            }
+        }
+        return result
+    }
+    
+    
+    public static func ExecuteAllAsync( minScorePerWord: Int, wordList: [String], shapes: [ShapeModel], rotatedShapes: [ShapeModel], index:[[Int]]) async -> [MergedModel] {
+        // Going to try to fire off 10 async operations to traverse the list such that the first one does 0,10,20 and second does 1,11,21 etc
+        async let a0 = ExecuteOne(minScorePerWord: minScorePerWord, wordList: wordList, shapes: shapes, rotatedShapes: rotatedShapes, index: index, strideStart: 0)
+        async let a1 = ExecuteOne(minScorePerWord: minScorePerWord, wordList: wordList, shapes: shapes, rotatedShapes: rotatedShapes, index: index, strideStart: 1)
+        async let a2 = ExecuteOne(minScorePerWord: minScorePerWord, wordList: wordList, shapes: shapes, rotatedShapes: rotatedShapes, index: index, strideStart: 2)
+        async let a3 = ExecuteOne(minScorePerWord: minScorePerWord, wordList: wordList, shapes: shapes, rotatedShapes: rotatedShapes, index: index, strideStart: 3)
+        async let a4 = ExecuteOne(minScorePerWord: minScorePerWord, wordList: wordList, shapes: shapes, rotatedShapes: rotatedShapes, index: index, strideStart: 4)
+        async let a5 = ExecuteOne(minScorePerWord: minScorePerWord, wordList: wordList, shapes: shapes, rotatedShapes: rotatedShapes, index: index, strideStart: 5)
+        async let a6 = ExecuteOne(minScorePerWord: minScorePerWord, wordList: wordList, shapes: shapes, rotatedShapes: rotatedShapes, index: index, strideStart: 6)
+        async let a7 = ExecuteOne(minScorePerWord: minScorePerWord, wordList: wordList, shapes: shapes, rotatedShapes: rotatedShapes, index: index, strideStart: 7)
+        async let a8 = ExecuteOne(minScorePerWord: minScorePerWord, wordList: wordList, shapes: shapes, rotatedShapes: rotatedShapes, index: index, strideStart: 8)
+        async let a9 = ExecuteOne(minScorePerWord: minScorePerWord, wordList: wordList, shapes: shapes, rotatedShapes: rotatedShapes, index: index, strideStart: 9)
+        
+//        guard
+//            let a0 = await a0,
+//            let a1 = await a1,
+//            let a2 = await a2,
+//            let a3 = await a3,
+//            let a4 = await a4,
+//            let a5 = await a5,
+//            let a6 = await a6,
+//            let a7 = await a7,
+//            let a8 = await a8,
+//            let a9 = await a9
+//        else {
+//            print("Didnt work")
+//            return
+//        }
+        
+        let result = await a0 + a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9
+        print("Success with \(result.count) elements")
+        return result
+    }
+    
+    public static func ExecuteOne( minScorePerWord: Int, wordList: [String], shapes: [ShapeModel], rotatedShapes: [ShapeModel], index:[[Int]], strideStart: Int) -> [MergedModel] {
+        
+        var result: [MergedModel] = []
+        
+        var totalShapesFound = 0
+        
+        // The difference is that each cpu works on 0,10,20 .. or 1, 11, 21 and so we divide the task
+        for shapeId in stride(from: strideStart, to:shapes.count, by: 10) {
+            
+            let foundShapes = Execute(shapeId: shapeId, shapes: shapes, rotatedShapes:rotatedShapes, index: index, wordList: wordList)
+            
+            let filteredFoundShapes = foundShapes.filter { Int($0.score) / Int($0.wordCount) >= minScorePerWord }
+            
+            let mergedModel = MergedModel(shapeId: shapeId, compatibleShapes: filteredFoundShapes)
+            // ideally here we just print it to a file, one shape at a time
+            //print(mergedModel)
+            result.append(mergedModel)
+            
+            totalShapesFound += filteredFoundShapes.count
+            
             if shapeId % 100 == 0 {
                 print("\(shapeId) of \(shapes.count) shapes merged, percent complete:\(Double(shapeId) / Double(shapes.count) * Double(100)), total merges so far: \(totalShapesFound)")
             }
         }
         return result
+        
     }
     
     public static func toCsv(mergedModel: MergedModel) -> String {
